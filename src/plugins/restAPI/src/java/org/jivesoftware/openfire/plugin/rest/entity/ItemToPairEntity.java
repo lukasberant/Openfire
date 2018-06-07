@@ -3,8 +3,7 @@ package org.jivesoftware.openfire.plugin.rest.entity;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "pairDevicesOfFriendsObject")
-public class PairDevicesOfFriendsObject {
+public class ItemToPairEntity {
 
     private String user1DeviceXmppLogin;
     private String user2DeviceXmppLogin;
@@ -13,9 +12,16 @@ public class PairDevicesOfFriendsObject {
     private String user1GroupName;
     private String user2GroupName;
 
+    public ItemToPairEntity() {
+    }
 
-
-    public PairDevicesOfFriendsObject() {
+    public ItemToPairEntity(String user1DeviceXmppLogin, String user2DeviceXmppLogin, String user1DeviceName, String user2DeviceName, String user1GroupName, String user2GroupName) {
+        this.user1DeviceXmppLogin = user1DeviceXmppLogin;
+        this.user2DeviceXmppLogin = user2DeviceXmppLogin;
+        this.user1DeviceName = user1DeviceName;
+        this.user2DeviceName = user2DeviceName;
+        this.user1GroupName = user1GroupName;
+        this.user2GroupName = user2GroupName;
     }
 
     @XmlElement

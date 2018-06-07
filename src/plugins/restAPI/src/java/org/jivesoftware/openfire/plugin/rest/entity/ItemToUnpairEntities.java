@@ -3,27 +3,28 @@ package org.jivesoftware.openfire.plugin.rest.entity;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.jivesoftware.openfire.plugin.rest.entity.PairDevicesOfFriendsObject;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.jivesoftware.openfire.plugin.rest.entity.ItemToUnpairEntity;
 /**
- * The Class ItemsToPairContainer.
+ * The Class ItemsToUnpairContainer.
  */
-@XmlRootElement(name = "itemsToPairContainer")
+@XmlRootElement(name = "items")
 @XmlType(propOrder = { "items" })
-public class ItemsToPairContainer {
+public class ItemToUnpairEntities {
 
     /** The groups. */
-    private List<PairDevicesOfFriendsObject> items;
+    private List<ItemToUnpairEntity> items;
 
 
     /**
      * Instantiates a new roster item entity.
      */
-    public ItemsToPairContainer(List<PairDevicesOfFriendsObject> items) {
+    public ItemToUnpairEntities(List<ItemToUnpairEntity> items) {
         this.items = items;
+   
     }
 
     /**
@@ -32,8 +33,8 @@ public class ItemsToPairContainer {
      * @return the items
      */
     @XmlElement(name = "items")
-    @XmlElementWrapper(name = "items")
-    public List<PairDevicesOfFriendsObject> getItems() {
+    @JsonProperty(value = "items")
+    public List<ItemToUnpairEntity> getItems() {
         return items;
     }
 
@@ -43,7 +44,7 @@ public class ItemsToPairContainer {
      * @param items
      *            the new items
      */
-    public void setItems(List<PairDevicesOfFriendsObject> items) {
+    public void setItems(List<ItemToUnpairEntity> items) {
         this.items = items;
     }
 }

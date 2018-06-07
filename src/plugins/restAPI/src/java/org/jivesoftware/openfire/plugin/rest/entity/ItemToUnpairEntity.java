@@ -3,13 +3,18 @@ package org.jivesoftware.openfire.plugin.rest.entity;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "unpairDevicesOfFriendsObject")
-public class UnpairDevicesOfFriendsObject {
+@XmlRootElement(name = "item")
+public class ItemToUnpairEntity {
 
     private String user1DeviceXmppLogin;
     private String user2DeviceXmppLogin;
     
-    public UnpairDevicesOfFriendsObject() {
+    public ItemToUnpairEntity() {
+    }
+
+    public ItemToUnpairEntity(String user1DeviceXmppLogin, String user2DeviceXmppLogin) {
+        this.user1DeviceXmppLogin = user1DeviceXmppLogin;
+        this.user2DeviceXmppLogin = user2DeviceXmppLogin;
     }
 
     @XmlElement

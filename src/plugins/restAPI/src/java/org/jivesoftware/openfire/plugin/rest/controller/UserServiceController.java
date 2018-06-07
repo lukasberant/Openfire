@@ -316,10 +316,20 @@ public class UserServiceController {
         if (rosterItemEntity.getGroups() != null) {
             rosterItem.setGroups(rosterItemEntity.getGroups());
         }
-        UserUtils.checkSubType(rosterItemEntity.getSubscriptionType());
+        //UserUtils.checkSubType(rosterItemEntity.getSubscriptionType());
 
         rosterItem.setSubStatus(RosterItem.SubType.getTypeFromInt(rosterItemEntity.getSubscriptionType()));
         roster.updateRosterItem(rosterItem);
+    }
+
+    public void addOrUpdateRosterItem(String username, RosterItemEntity rosterItemEntity) throws ServiceException, UserNotFoundException, UserAlreadyExistsException, SharedGroupException {
+        try {
+			addRosterItem(username, rosterItemEntity);
+		} catch (UserAlreadyExistsException e) {
+            updateRosterItem(username, rosterItemEntity.getJid(), rosterItemEntity);
+        } catch (ServiceException | SharedGroupException | UserNotFoundException e) {
+            throw e;
+		} 
     }
 
     /**

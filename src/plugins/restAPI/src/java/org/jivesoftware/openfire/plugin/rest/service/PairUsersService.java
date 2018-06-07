@@ -1,30 +1,21 @@
 package org.jivesoftware.openfire.plugin.rest.service;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.jivesoftware.openfire.SharedGroupException;
 import org.jivesoftware.openfire.plugin.rest.controller.UserServiceController;
-import org.jivesoftware.openfire.plugin.rest.entity.RosterEntities;
 import org.jivesoftware.openfire.plugin.rest.entity.RosterItemEntity;
-import org.jivesoftware.openfire.plugin.rest.entity.UnpairDevicesOfFriendsObject;
-import org.jivesoftware.openfire.plugin.rest.entity.ItemsToPairContainer;
-import org.jivesoftware.openfire.plugin.rest.entity.ItemsToUnpairContainer;
-import org.jivesoftware.openfire.plugin.rest.entity.PairDevicesOfFriendsObject;
+import org.jivesoftware.openfire.plugin.rest.entity.ItemToPairEntities;
+import org.jivesoftware.openfire.plugin.rest.entity.ItemToPairEntity;
+import org.jivesoftware.openfire.plugin.rest.entity.ItemToUnpairEntities;
+import org.jivesoftware.openfire.plugin.rest.entity.ItemToUnpairEntity;
 import org.jivesoftware.openfire.plugin.rest.exceptions.ExceptionType;
 import org.jivesoftware.openfire.plugin.rest.exceptions.ServiceException;
 import org.jivesoftware.openfire.user.UserAlreadyExistsException;
@@ -44,61 +35,43 @@ public class PairUsersService {
     }
 
     @POST
-    public Response pairUsers(@PathParam("itemsToPairContainer") ItemsToPairContainer itemsToPairContainer)   
+    public Response pairUsers(List<ItemToPairEntity> items)   
             throws ServiceException {
         try {
-          if (itemsToPairContainer != null) {
-                for (PairDevicesOfFriendsObject item :  itemsToPairContainer.getItems()) {
-                    RosterItemEntity entity1 = new RosterItemEntity(item.getUser2DeviceXmppLogin(), item.getUser2DeviceName(), RosterItem.SubType.BOTH.ordinal());
-                    List<String> groups1 = new ArrayList<String>();
-                    groups1.add(item.getUser2GroupName());
-                    entity1.setGroups(groups1);
-                    
-                    RosterItemEntity entity2 = new RosterItemEntity(item.getUser1DeviceXmppLogin(), item.getUser1DeviceName(), RosterItem.SubType.BOTH.ordinal());
-                    List<String> groups2 = new ArrayList<String>();
-                    groups2.add(item.getUser1GroupName());
-                    entity2.setGroups(groups2);
+            for (ItemToPairEntity item :  items) {
+                RosterItemEntity user2RosterEntity = new RosterItemEntity(item.getUser2DeviceXmppLogin(), item.getUser2DeviceName(), RosterItem.SubType.BOTH.getValue());
+                List<String> user2RosterEntiryGroups = new ArrayList<String>();
+                user2RosterEntiryGroups.add(item.getUser2GroupName());
+                user2RosterEntity.setGroups(user2RosterEntiryGroups);
+                
+                RosterItemEntity user1RosterEntity = new RosterItemEntity(item.getUser1DeviceXmppLogin(), item.getUser1DeviceName(), RosterItem.SubType.BOTH.getValue());
+                List<String> user1RosterEntityGroups = new ArrayList<String>();
+                user1RosterEntityGroups.add(item.getUser1GroupName());
+                user1RosterEntity.setGroups(user1RosterEntityGroups);
         
-                    
-                    // username,
-                    // pairUsername,
-                    // nickname,
-                    // group,
-
-            
-                    plugin.addRosterItem(item.getUser1DeviceXmppLogin(), entity1);
-                    plugin.addRosterItem(item.getUser2DeviceName(), entity2);
-            
-                }
-          }
+                plugin.addOrUpdateRosterItem(item.getUser1DeviceXmppLogin(), user2RosterEntity);
+                plugin.addOrUpdateRosterItem(item.getUser2DeviceXmppLogin(), user1RosterEntity);
+            }
         } catch (UserNotFoundException e) {
             throw new ServiceException(COULD_NOT_CREATE_ROSTER_ITEM, "", ExceptionType.USER_NOT_FOUND_EXCEPTION,
                     Response.Status.NOT_FOUND, e);
-        } catch (UserAlreadyExistsException e) {
-            throw new ServiceException(COULD_NOT_CREATE_ROSTER_ITEM, "", ExceptionType.USER_ALREADY_EXISTS_EXCEPTION,
-                    Response.Status.CONFLICT, e);
-        } catch (SharedGroupException e) {
-            throw new ServiceException(COULD_NOT_CREATE_ROSTER_ITEM, "", ExceptionType.SHARED_GROUP_EXCEPTION,
+        } catch (Exception e) {
+            throw new ServiceException(COULD_NOT_CREATE_ROSTER_ITEM, "", e.getMessage(),
                     Response.Status.BAD_REQUEST, e);
         }
-         return Response.status(Response.Status.CREATED).build();
+        return Response.status(Response.Status.CREATED).build();
     }
 
     @DELETE
-    public Response unpairUsers(ItemsToUnpairContainer itemsToUnpairContainer)
-            throws ServiceException {
-                String rosterJid = "";
-         
+    public Response unpairUsers(List<ItemToUnpairEntity> items)
+            throws ServiceException {         
         try {
-            for (UnpairDevicesOfFriendsObject item :  itemsToUnpairContainer.getItems()) {
-                rosterJid = item.getUser2DeviceXmppLogin();
-                plugin.deleteRosterItem(item.getUser1DeviceXmppLogin(), rosterJid);
-                rosterJid = item.getUser1DeviceXmppLogin();
-                plugin.deleteRosterItem(item.getUser2DeviceXmppLogin(), rosterJid);
+            for (ItemToUnpairEntity item :  items) {
+                plugin.deleteRosterItem(item.getUser1DeviceXmppLogin(), item.getUser2DeviceXmppLogin());
+                plugin.deleteRosterItem(item.getUser2DeviceXmppLogin(), item.getUser1DeviceXmppLogin());
             }
-
         } catch (SharedGroupException e) {
-            throw new ServiceException("Could not delete the roster item", rosterJid,
+            throw new ServiceException("Could not delete the roster item", "",
                     ExceptionType.SHARED_GROUP_EXCEPTION, Response.Status.BAD_REQUEST, e);
         }
         return Response.status(Response.Status.OK).build();
