@@ -40,6 +40,9 @@
 <li><a href="#create-a-user-roster-entry">Create a user roster entry</a></li>
 <li><a href="#delete-a-user-roster-entry">Delete a user roster entry</a></li>
 <li><a href="#update-a-user-roster-entry">Update a user roster entry</a></li>
+<li><a href="#pair-users">Pair users (multipairing)</a></li>
+<li><a href="#unpair-users">Unpair users (multipairing)</a></li>
+
 </ul>
 </li>
 <li><a href="#chat-room-related-rest-endpoints">Chat room related REST Endpoints</a>
@@ -357,6 +360,73 @@ The secret key can be defined in Openfire Admin console under Server &gt; Server
     <span class="token punctuation">]</span>
 <span class="token punctuation">}</span>
 </code></pre>
+
+
+
+
+<h2 id="pair-users">Pair users (multipairing)</h2>
+<p>Endpoint to pair users (with their devices)</p>
+<blockquote>
+<p><strong>POST</strong> /users/roster/multipairing</p>
+</blockquote>
+<p><strong>Payload:</strong> User<br>
+<strong>Return value:</strong> HTTP status 201 (Created)</p>
+<h3 id="examples-2">Examples</h3>
+<h4 id="xml-examples">XML Examples</h4>
+<blockquote>
+<p><strong>Header:</strong> Authorization: Basic YWRtaW46MTIzNDU=<br>
+<strong>Header:</strong> Content-Type: application/<strong>xml</strong></p>
+</blockquote>
+<blockquote>
+<p><strong>POST</strong> <a href="http://example.org:9090/plugins/restapi/v1/users/roster/multipairing">http://example.org:9090/plugins/restapi/v1/users/roster/multipairing</a></p>
+</blockquote>
+<p><strong>Payload Example (required parameters):</strong></p>
+<pre class=" language-xml"><code class="prism  language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>items</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>itemToPairEntity</span><span class="token punctuation">&gt;</span></span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>user1DeviceXmppLogin</span><span class="token punctuation">&gt;</span></span>testUser<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>user1DeviceXmppLogin</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>user2DeviceXmppLogin</span><span class="token punctuation">&gt;</span></span>testUser2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>user2DeviceXmppLogin</span><span class="token punctuation">&gt;</span></span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>user1DeviceName</span><span class="token punctuation">&gt;</span></span>testuserDeviceName<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>user1DeviceName</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>user2DeviceName</span><span class="token punctuation">&gt;</span></span>testuser2DeviceName<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>user2DeviceName</span><span class="token punctuation">&gt;</span></span>
+      
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>itemToPairEntity</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>items</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+
+<h2 id="unpair-users">Unpair users (multipairing)</h2>
+<p>Endpoint to unpair users (also unpair their devices)</p>
+<blockquote>
+<p><strong>DELETE</strong> /users/roster/multipairing</p>
+</blockquote>
+<p><strong>Payload:</strong> User<br>
+<strong>Return value:</strong> HTTP status 200 (OK)</p>
+<h3 id="examples-2">Examples</h3>
+<h4 id="xml-examples">XML Examples</h4>
+<blockquote>
+<p><strong>Header:</strong> Authorization: Basic YWRtaW46MTIzNDU=<br>
+<strong>Header:</strong> Content-Type: application/<strong>xml</strong></p>
+</blockquote>
+<blockquote>
+<p><strong>DELETE</strong> <a href="http://example.org:9090/plugins/restapi/v1/users/roster/multipairing">http://example.org:9090/plugins/restapi/v1/users/roster/multipairing</a></p>
+</blockquote>
+<p><strong>Payload Example (required parameters):</strong></p>
+<pre class=" language-xml"><code class="prism  language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>items</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>itemToUnpairEntity</span><span class="token punctuation">&gt;</span></span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>user1DeviceXmppLogin</span><span class="token punctuation">&gt;</span></span>testUser<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>user1DeviceXmppLogin</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>user2DeviceXmppLogin</span><span class="token punctuation">&gt;</span></span>testUser2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>user2DeviceXmppLogin</span><span class="token punctuation">&gt;</span></span>
+        
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>itemToUnpairEntity</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>items</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+
+
+
 <h2 id="delete-a-user">Delete a user</h2>
 <p>Endpoint to delete a user</p>
 <blockquote>
