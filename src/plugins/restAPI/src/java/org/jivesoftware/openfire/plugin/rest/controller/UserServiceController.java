@@ -349,10 +349,7 @@ public class UserServiceController {
         Roster roster = getUserRoster(username);
         JID jid = new JID(rosterJid);
 
-        if (roster.deleteRosterItem(jid, true) == null) {
-            throw new ServiceException("Roster Item could not deleted", jid.toBareJID(), "RosterItemNotFound",
-                    Response.Status.NOT_FOUND);
-        }
+        roster.deleteRosterItem(jid, true);
     }
 
     /**

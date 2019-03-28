@@ -35,13 +35,13 @@ public class PairUsersService {
     @POST
     public Response pairUsers(List<ItemToPairEntity> items)   
             throws ServiceException {
-        try {
-            for (ItemToPairEntity item: items) {
+        for (ItemToPairEntity item: items) {
+            try {
                 RosterItemEntity user2RosterEntity = new RosterItemEntity(item.getUser2DeviceXmppLogin(), item.getUser2DeviceName(), RosterItem.SubType.BOTH.getValue());
                 List<String> user2RosterEntiryGroups = new ArrayList<String>();
                 user2RosterEntiryGroups.add(item.getUser2GroupName());
                 user2RosterEntity.setGroups(user2RosterEntiryGroups);
-                
+
                 RosterItemEntity user1RosterEntity = new RosterItemEntity(item.getUser1DeviceXmppLogin(), item.getUser1DeviceName(), RosterItem.SubType.BOTH.getValue());
                 List<String> user1RosterEntityGroups = new ArrayList<String>();
                 user1RosterEntityGroups.add(item.getUser1GroupName());
@@ -52,30 +52,37 @@ public class PairUsersService {
 
                 plugin.addOrUpdateRosterItem(user1Username, user2RosterEntity);
                 plugin.addOrUpdateRosterItem(user2Username, user1RosterEntity);
-            }
-        } catch (UserNotFoundException e) {
-            throw new ServiceException(COULD_NOT_CREATE_ROSTER_ITEM, "", ExceptionType.USER_NOT_FOUND_EXCEPTION,
-                    Response.Status.NOT_FOUND, e);
-        } catch (Exception e) {
-            throw new ServiceException(COULD_NOT_CREATE_ROSTER_ITEM, "", e.getMessage(),
+            } catch (ServiceException e) {
+                if (e.getException() != ExceptionType.USER_NOT_FOUND_EXCEPTION) {
+                    throw new ServiceException(COULD_NOT_CREATE_ROSTER_ITEM, "", e.getMessage(),
+                        Response.Status.BAD_REQUEST, e);
+                }
+            } catch (Exception e) {
+                throw new ServiceException(COULD_NOT_CREATE_ROSTER_ITEM, "", e.getMessage(),
                     Response.Status.BAD_REQUEST, e);
+            }
         }
         return Response.status(Response.Status.CREATED).build();
     }
 
     @DELETE
     public Response unpairUsers(List<ItemToUnpairEntity> items)
-            throws ServiceException {         
-        try {
-            for (ItemToUnpairEntity item :  items) {
+            throws ServiceException {
+        for (ItemToUnpairEntity item :  items) {
+            try {
                 String user1Username = new JID(item.getUser1DeviceXmppLogin()).getNode();
                 String user2Username = new JID(item.getUser2DeviceXmppLogin()).getNode();
                 plugin.deleteRosterItem(user1Username, item.getUser2DeviceXmppLogin());
                 plugin.deleteRosterItem(user2Username, item.getUser1DeviceXmppLogin());
-            }
-        } catch (Exception e) {
-            throw new ServiceException("Could not delete the roster item", "",
+            } catch (ServiceException e) {
+                if (e.getException() != ExceptionType.USER_NOT_FOUND_EXCEPTION) {
+                    throw new ServiceException("Could not delete the roster item", "",
+                        ExceptionType.SHARED_GROUP_EXCEPTION, Response.Status.BAD_REQUEST, e);
+                }
+            } catch (Exception e) {
+                throw new ServiceException("Could not delete the roster item", "",
                     ExceptionType.SHARED_GROUP_EXCEPTION, Response.Status.BAD_REQUEST, e);
+            }
         }
         return Response.status(Response.Status.OK).build();
     }
